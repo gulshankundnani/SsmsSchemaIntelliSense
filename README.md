@@ -2,6 +2,8 @@
 
 **Instant table and column suggestions in SQL Server Management Studio — without waiting for IntelliSense to load.**
 
+![Typing in SSMS: table names, then the columns of an alias, appear instantly](demo.gif)
+
 SSMS rebuilds its IntelliSense cache every time you open a query window, and on large databases or remote
 servers that often means a long wait, or no suggestions at all. This extension saves each database's schema
 **to your disk** the first time you use it. After that, suggestions appear the moment you start typing —

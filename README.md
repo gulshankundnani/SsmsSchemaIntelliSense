@@ -15,7 +15,7 @@ even right after SSMS starts, and even when the server is slow.
 - 🧩 **Works across SSMS versions** — one installer for SSMS 18, 19, 20, 21 and 22.
 - 🧮 **Built-in functions too** — about 150 T-SQL functions and `@@` variables, each with its parameters.
 - 🔔 **Updates itself** — checks GitHub once a day and offers new versions with one click.
-- 🪶 **Lightweight** — a single ~155 KB installer, nothing else to install.
+- 🪶 **Lightweight** — a single ~185 KB installer, nothing else to install.
 
 ## What it suggests
 
@@ -45,13 +45,14 @@ arguments insert their brackets: `getd` + Tab gives `GETDATE()`.
 ## Install
 
 1. Download **`SsmsSchemaIntelliSense-Setup.exe`** from the [latest release](../../releases/latest).
-2. **Close every SSMS window.**
-3. Double-click the EXE and accept the administrator prompt.
-   - Windows may show *"Windows protected your PC"* because the EXE is not code-signed:
+2. Double-click it and click **Yes** when Windows asks for permission.
+   - Windows may first show *"Windows protected your PC"* because the EXE is not code-signed:
      click **More info → Run anyway**.
-4. Start SSMS, connect a query window to a database, and start typing.
+3. The setup window shows each step. If SSMS is open it asks you to save your queries and close it, then
+   continues **by itself** as soon as SSMS is closed.
+4. Click **Open SSMS**, connect a query window to a database, and start typing.
 
-The installer finds every SSMS 18–22 on the PC and installs the right build into each one.
+Setup finds every SSMS 18–22 on the PC and installs the right build into each one.
 
 > **Tip:** if SSMS's own suggestion list also appears, switch it off in
 > **Tools → Options → Text Editor → Transact-SQL → IntelliSense → Enable IntelliSense**.
@@ -61,33 +62,38 @@ objects). Every time after that, suggestions are instant.
 
 ## Updates
 
-From version 1.2.0 the extension checks this repository's latest release **once a day** in the background.
-When a newer version exists it asks once:
+The extension checks this repository's latest release **once a day** in the background. When a newer
+version exists, a window shows what's new and offers three choices: **Update now**, **Remind me tomorrow**
+or **Skip this version**.
 
-- **Yes** — downloads `SsmsSchemaIntelliSense-Setup.exe` from the release, checks its SHA-256 against the
-  checksum GitHub publishes for that file, and starts it. Accept the administrator prompt, close SSMS, and the
-  update finishes by itself. Your saved schemas are kept.
-- **No** — asks again tomorrow.
-- **Cancel** — skips that version.
+**Update now** walks you through every step in the same window:
 
-The installer is only ever downloaded from `github.com/gulshankundnani/SsmsSchemaIntelliSense`, and a file
-whose checksum doesn't match is deleted, never run. To turn the check off, set `AutoUpdateCheck=false` in
-`%LOCALAPPDATA%\SsmsSchemaIntelliSense\settings.txt`.
+1. **Download the update** — with a progress bar.
+2. **Check that the download is genuine** — its SHA-256 must match the checksum GitHub publishes for the file.
+   A file that doesn't match is deleted, never run.
+3. **Start the installer** — Windows asks for permission: click **Yes**.
+4. **Close SSMS** — the setup window then finishes the update by itself and tells you when it's done.
+
+Your saved schemas are kept. The installer is only ever downloaded from
+`github.com/gulshankundnani/SsmsSchemaIntelliSense`. To turn the daily check off, set
+`AutoUpdateCheck=false` in `%LOCALAPPDATA%\SsmsSchemaIntelliSense\settings.txt`.
 
 **Updating by hand** (and from 1.0.0 or 1.1.0, which have no update check): download the new EXE from the
-[latest release](../../releases/latest), close SSMS and run it.
+[latest release](../../releases/latest) and run it.
 
 ## Uninstall
 
-Close SSMS, then run from a command prompt:
+Run from a command prompt:
 
 ```
 SsmsSchemaIntelliSense-Setup.exe /uninstall
 ```
 
-To also delete the saved schemas, remove the folder `%LOCALAPPDATA%\SsmsSchemaIntelliSense`.
+The setup window asks you to close SSMS if it's open, then removes the extension. To also delete the saved
+schemas, remove the folder `%LOCALAPPDATA%\SsmsSchemaIntelliSense`.
 
-Installer options: `/uninstall` removes the extension, `/quiet` skips all prompts (for scripted installs).
+Setup options: `/uninstall` removes the extension; `/quiet` installs (or removes, with `/uninstall`) with no
+window at all, for scripted installs, and fails with exit code 3 if SSMS is open.
 
 ## Privacy and security
 
@@ -142,6 +148,7 @@ server and database it detected, each schema refresh (object count and time take
 
 | Version | Changes |
 |---|---|
+| **1.3.0** | Update window inside SSMS with release notes and a step-by-step checklist (download, verify, permission, close SSMS); setup is now a window instead of a console and continues by itself once SSMS is closed, with an **Open SSMS** button at the end. |
 | **1.2.0** | Daily update check against this repository's releases, one-click download with SHA-256 verification, installer finishes after SSMS closes; `settings.txt` to turn it off. |
 | **1.1.0** | About 150 built-in T-SQL functions and `@@` variables with their parameters; table-valued functions (`STRING_SPLIT`, `OPENJSON`, `GENERATE_SERIES`) after `FROM` / `JOIN`; only tables, views and functions after `FROM` / `JOIN` (Tab no longer inserts a column there); no-argument functions insert their `()`. |
 | **1.0.0** | First release: local schema cache per server + database, column suggestions by alias or table, objects by schema, background refresh, one installer for SSMS 18–22. |

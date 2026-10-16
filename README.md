@@ -14,7 +14,8 @@ even right after SSMS starts, and even when the server is slow.
 - 🔄 **Stays current** — refreshed quietly in the background, at most every 30 minutes, with one lightweight query.
 - 🧩 **Works across SSMS versions** — one installer for SSMS 18, 19, 20, 21 and 22.
 - 🧮 **Built-in functions too** — about 150 T-SQL functions and `@@` variables, each with its parameters.
-- 🪶 **Lightweight** — a single ~140 KB installer, nothing else to install.
+- 🔔 **Updates itself** — checks GitHub once a day and offers new versions with one click.
+- 🪶 **Lightweight** — a single ~155 KB installer, nothing else to install.
 
 ## What it suggests
 
@@ -58,8 +59,23 @@ The installer finds every SSMS 18–22 on the PC and installs the right build in
 The first time you use a database, its schema is fetched once (a few seconds on a database with thousands of
 objects). Every time after that, suggestions are instant.
 
-**Upgrading:** download the new EXE, close SSMS and run it. It replaces the installed version; your saved
-schemas are kept.
+## Updates
+
+From version 1.2.0 the extension checks this repository's latest release **once a day** in the background.
+When a newer version exists it asks once:
+
+- **Yes** — downloads `SsmsSchemaIntelliSense-Setup.exe` from the release, checks its SHA-256 against the
+  checksum GitHub publishes for that file, and starts it. Accept the administrator prompt, close SSMS, and the
+  update finishes by itself. Your saved schemas are kept.
+- **No** — asks again tomorrow.
+- **Cancel** — skips that version.
+
+The installer is only ever downloaded from `github.com/gulshankundnani/SsmsSchemaIntelliSense`, and a file
+whose checksum doesn't match is deleted, never run. To turn the check off, set `AutoUpdateCheck=false` in
+`%LOCALAPPDATA%\SsmsSchemaIntelliSense\settings.txt`.
+
+**Updating by hand** (and from 1.0.0 or 1.1.0, which have no update check): download the new EXE from the
+[latest release](../../releases/latest), close SSMS and run it.
 
 ## Uninstall
 
@@ -81,7 +97,10 @@ Installer options: `/uninstall` removes the extension, `/quiet` skips all prompt
   database, at most every 30 minutes. It runs on its own connection, so it never touches your query window's
   session or transactions.
 - **Credentials:** the extension uses the login of the query window you are typing in, only in memory, to run
-  that query. Nothing is sent anywhere else — there is no telemetry and no internet access.
+  that query. Your credentials, queries and schema never leave your PC.
+- **Internet:** once a day it asks GitHub for this project's latest release (a plain HTTPS request with no data
+  about you or your databases; GitHub sees your IP address as with any website). Turn it off with
+  `AutoUpdateCheck=false` in `settings.txt` (see [Updates](#updates)). There is no telemetry.
 
 ## Troubleshooting
 
@@ -94,6 +113,7 @@ server and database it detected, each schema refresh (object count and time take
 | Two suggestion lists | Turn off SSMS's own IntelliSense (see the tip above). |
 | A new table or column is missing | The schema refreshes at most every 30 minutes; restart SSMS to refresh sooner. |
 | Nothing in the log after installing | Restart SSMS; if still nothing, close SSMS and run the installer again. |
+| No update offer behind a company proxy | The check uses Windows' proxy settings; `log.txt` shows "Update check failed" with the reason. Update by hand from Releases. |
 
 ## Limitations
 
@@ -122,6 +142,7 @@ server and database it detected, each schema refresh (object count and time take
 
 | Version | Changes |
 |---|---|
+| **1.2.0** | Daily update check against this repository's releases, one-click download with SHA-256 verification, installer finishes after SSMS closes; `settings.txt` to turn it off. |
 | **1.1.0** | About 150 built-in T-SQL functions and `@@` variables with their parameters; table-valued functions (`STRING_SPLIT`, `OPENJSON`, `GENERATE_SERIES`) after `FROM` / `JOIN`; only tables, views and functions after `FROM` / `JOIN` (Tab no longer inserts a column there); no-argument functions insert their `()`. |
 | **1.0.0** | First release: local schema cache per server + database, column suggestions by alias or table, objects by schema, background refresh, one installer for SSMS 18–22. |
 

@@ -1,6 +1,6 @@
 # SSMS Schema IntelliSense
 
-**Instant table and column suggestions in SQL Server Management Studio — without waiting for IntelliSense to load.**
+**Instant table, column and function suggestions in SQL Server Management Studio — without waiting for IntelliSense to load.**
 
 ![Typing in SSMS: table names, then the columns of an alias, appear instantly](demo.gif)
 
@@ -13,7 +13,8 @@ even right after SSMS starts, and even when the server is slow.
 - 🎯 **Follows the active query window** — the current server and database, including the database dropdown and `USE`.
 - 🔄 **Stays current** — refreshed quietly in the background, at most every 30 minutes, with one lightweight query.
 - 🧩 **Works across SSMS versions** — one installer for SSMS 18, 19, 20, 21 and 22.
-- 🪶 **Lightweight** — a single ~90 KB installer, nothing else to install.
+- 🧮 **Built-in functions too** — about 150 T-SQL functions and `@@` variables, each with its parameters.
+- 🪶 **Lightweight** — a single ~140 KB installer, nothing else to install.
 
 ## What it suggests
 
@@ -23,10 +24,15 @@ even right after SSMS starts, and even when the server is slow.
 | `SELECT s.` … `FROM Student s` | the columns of `Student`, with their data types |
 | `Student.` | the columns of `Student` |
 | `sales.` (a schema name) | the objects in the `sales` schema |
-| a plain word inside a query | the columns of every table in the `FROM` / `JOIN` of that query first, then all objects |
+| a plain word inside a query | the columns of every table in the `FROM` / `JOIN` of that query first, then all objects, then built-in functions |
+| `getd` | `GETDATE()` and other built-in functions, with their parameters and the SQL Server version they need |
+| `@@ro` | `@@ROWCOUNT` and the other `@@` system variables |
+| `FROM STRING_` | table-valued functions such as `STRING_SPLIT`, `OPENJSON`, `GENERATE_SERIES` |
 
 The list narrows as you type. **Tab** or **Enter** inserts the highlighted suggestion, **Esc** closes the
-list, and typing `.` after a table or alias opens its columns.
+list, and typing `.` after a table or alias opens its columns. After `FROM`, `JOIN`, `UPDATE`, `INTO` or
+`EXEC` only tables, views, procedures and functions are offered, never columns. Functions that take no
+arguments insert their brackets: `getd` + Tab gives `GETDATE()`.
 
 ## Requirements
 
@@ -51,6 +57,9 @@ The installer finds every SSMS 18–22 on the PC and installs the right build in
 
 The first time you use a database, its schema is fetched once (a few seconds on a database with thousands of
 objects). Every time after that, suggestions are instant.
+
+**Upgrading:** download the new EXE, close SSMS and run it. It replaces the installed version; your saved
+schemas are kept.
 
 ## Uninstall
 
@@ -92,6 +101,8 @@ server and database it detected, each schema refresh (object count and time take
   the schema saved from an earlier connection with Windows or SQL Server login.
 - Query parsing is deliberately simple: aliases from `FROM`, `JOIN`, `UPDATE`, `INTO`, `APPLY` and `MERGE`
   are recognised; CTE and derived-table aliases are not.
+- The built-in function list is fixed and shows every function regardless of your server's version: for
+  example `GREATEST` (SQL Server 2022+) is offered on older servers too. The tooltip shows the minimum version.
 - Tested on **SSMS 22**. SSMS 18–21 are supported by design but not yet confirmed on real installs —
   feedback welcome.
 
@@ -101,9 +112,18 @@ server and database it detected, each schema refresh (object count and time take
   connected to, and loads that database's saved schema from disk.
 - The first time you use a database after SSMS starts, and at most every 30 minutes after that, the saved
   schema is refreshed in the background with one read-only catalogue query; your typing never waits for it.
+- Built-in T-SQL functions and `@@` variables come from a list inside the extension, so they need no server
+  query at all.
 - It adds a small keyboard handler to each SQL window, because SSMS's own SQL editor would otherwise swallow the
   keystrokes that narrow the list.
 - One installer covers SSMS 18–22: it detects each SSMS's editor engine and installs the matching build.
+
+## Version history
+
+| Version | Changes |
+|---|---|
+| **1.1.0** | About 150 built-in T-SQL functions and `@@` variables with their parameters; table-valued functions (`STRING_SPLIT`, `OPENJSON`, `GENERATE_SERIES`) after `FROM` / `JOIN`; only tables, views and functions after `FROM` / `JOIN` (Tab no longer inserts a column there); no-argument functions insert their `()`. |
+| **1.0.0** | First release: local schema cache per server + database, column suggestions by alias or table, objects by schema, background refresh, one installer for SSMS 18–22. |
 
 ## ☕ Support this project
 
